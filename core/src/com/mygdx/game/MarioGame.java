@@ -19,4 +19,7 @@ public class MarioGame extends Game
 	{
 		super.render();
 	}
+
+	public static final int V_WIDTH = 400;
+	public static final int V_HEIGHT = 208;
 }
