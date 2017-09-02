@@ -5,9 +5,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.MarioGame;
@@ -18,9 +23,14 @@ public class PlayScreen implements Screen {
     private Viewport gamePort;
     private Hud hud;
 
+    //Tiled map variables
     private TmxMapLoader maploader;
     private TiledMap map;
     private OrthoCachedTiledMapRenderer renderer;
+
+    //Box2d variables
+    private World world;
+    private Box2DDebugRenderer box2dr;
 
     public PlayScreen(MarioGame game) {
         this.game = game;
@@ -32,6 +42,56 @@ public class PlayScreen implements Screen {
         map = maploader.load("core/assets/map/level.tmx");
         renderer = new OrthoCachedTiledMapRenderer(map);
         gameCam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
+        world = new World(new Vector2(0,0),true);
+        box2dr = new Box2DDebugRenderer();
+
+        BodyDef bodyDef = new BodyDef();
+        PolygonShape shape = new PolygonShape();
+        FixtureDef fixDef = new FixtureDef();
+        Body body;
+
+        for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
+            Rectangle rect = ((RectangleMapObject)object).getRectangle();
+            bodyDef.type = BodyDef.BodyType.StaticBody;
+            bodyDef.position.set(rect.getX()+rect.getWidth()/2,rect.getY()+rect.getHeight()/2);
+            body=world.createBody(bodyDef);
+            shape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
+            fixDef.shape=shape;
+            body.createFixture(fixDef);
+        }
+
+        //pipes
+        for(MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)){
+            Rectangle rect = ((RectangleMapObject)object).getRectangle();
+            bodyDef.type = BodyDef.BodyType.StaticBody;
+            bodyDef.position.set(rect.getX()+rect.getWidth()/2,rect.getY()+rect.getHeight()/2);
+            body=world.createBody(bodyDef);
+            shape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
+            fixDef.shape=shape;
+            body.createFixture(fixDef);
+        }
+
+        //coins
+        for(MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)){
+            Rectangle rect = ((RectangleMapObject)object).getRectangle();
+            bodyDef.type = BodyDef.BodyType.StaticBody;
+            bodyDef.position.set(rect.getX()+rect.getWidth()/2,rect.getY()+rect.getHeight()/2);
+            body=world.createBody(bodyDef);
+            shape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
+            fixDef.shape=shape;
+            body.createFixture(fixDef);
+        }
+
+        //bricks
+        for(MapObject object : map.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)){
+            Rectangle rect = ((RectangleMapObject)object).getRectangle();
+            bodyDef.type = BodyDef.BodyType.StaticBody;
+            bodyDef.position.set(rect.getX()+rect.getWidth()/2,rect.getY()+rect.getHeight()/2);
+            body=world.createBody(bodyDef);
+            shape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
+            fixDef.shape=shape;
+            body.createFixture(fixDef);
+        }
     }
 
     @Override
@@ -57,6 +117,8 @@ public class PlayScreen implements Screen {
 
         renderer.setView(gameCam);
         renderer.render();
+
+        box2dr.render(world,gameCam.combined);
 
         game.batch.setProjectionMatrix(gameCam.combined);
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
