@@ -2,19 +2,18 @@ package Screens;
 
 import Scenes.Hud;
 import Sprites.Mario;
+import Tools.B2WorldCreator;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.MapObject;
-import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.game.MarioGame;
@@ -49,79 +48,9 @@ public class PlayScreen implements Screen {
         world = new World(new Vector2(0, -10), true);
         box2dr = new Box2DDebugRenderer();
         player = new Mario(world);
-
-        BodyDef bodyDef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fixDef = new FixtureDef();
-        Body body;
+        new B2WorldCreator(world, map);
 
 
-        for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(
-                    (rect.getX() + rect.getWidth() / 2) / MarioGame.PPM,
-                    (rect.getY() + rect.getHeight() / 2) / MarioGame.PPM
-            );
-            body = world.createBody(bodyDef);
-            shape.setAsBox(
-                    (rect.getWidth() / 2) / MarioGame.PPM,
-                    (rect.getHeight() / 2) / MarioGame.PPM
-            );
-            fixDef.shape = shape;
-            body.createFixture(fixDef);
-        }
-
-        //pipes
-        for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(
-                    (rect.getX() + rect.getWidth() / 2) / MarioGame.PPM,
-                    (rect.getY() + rect.getHeight() / 2) / MarioGame.PPM
-            );
-            body = world.createBody(bodyDef);
-            shape.setAsBox(
-                    (rect.getWidth() / 2) / MarioGame.PPM,
-                    (rect.getHeight() / 2) / MarioGame.PPM
-            );
-            fixDef.shape = shape;
-            body.createFixture(fixDef);
-        }
-
-        //coins
-        for (MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(
-                    (rect.getX() + rect.getWidth() / 2) / MarioGame.PPM,
-                    (rect.getY() + rect.getHeight() / 2) / MarioGame.PPM
-            );
-            body = world.createBody(bodyDef);
-            shape.setAsBox(
-                    (rect.getWidth() / 2) / MarioGame.PPM,
-                    (rect.getHeight() / 2) / MarioGame.PPM
-            );
-            fixDef.shape = shape;
-            body.createFixture(fixDef);
-        }
-
-        //bricks
-        for (MapObject object : map.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)) {
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(
-                    (rect.getX() + rect.getWidth() / 2) / MarioGame.PPM,
-                    (rect.getY() + rect.getHeight() / 2) / MarioGame.PPM
-            );
-            body = world.createBody(bodyDef);
-            shape.setAsBox(
-                    (rect.getWidth() / 2) / MarioGame.PPM,
-                    (rect.getHeight() / 2) / MarioGame.PPM
-            );
-            fixDef.shape = shape;
-            body.createFixture(fixDef);
-        }
     }
 
     @Override
@@ -200,6 +129,10 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        map.dispose();
+        renderer.dispose();
+        world.dispose();
+        box2dr.dispose();
+        hud.dispose();
     }
 }
