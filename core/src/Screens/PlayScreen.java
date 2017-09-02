@@ -3,6 +3,7 @@ package Screens;
 import Scenes.Hud;
 import Sprites.Mario;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -36,8 +37,7 @@ public class PlayScreen implements Screen {
     private Mario player;
 
 
-    public PlayScreen(MarioGame game)
-    {
+    public PlayScreen(MarioGame game) {
         this.game = game;
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(MarioGame.V_WIDTH / MarioGame.PPM, MarioGame.V_HEIGHT / MarioGame.PPM, gameCam);
@@ -126,17 +126,37 @@ public class PlayScreen implements Screen {
 
     @Override
     public void show() {
-
     }
 
     public void handleInput(float deltaTime) {
         if (Gdx.input.isTouched()) gameCam.position.x += 100 * deltaTime;
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+            player.b2body.applyLinearImpulse
+                    (
+                            new Vector2(0, 4f),
+                            player.b2body.getWorldCenter(),
+                            true
+                    );
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && player.b2body.getLinearVelocity().x <= 2) {
+            player.b2body.applyLinearImpulse(new Vector2(0.1f, 0),
+                    player.b2body.getWorldCenter(), true);
+        }
+
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && player.b2body.getLinearVelocity().x >= -2) {
+            player.b2body.applyLinearImpulse(new Vector2(-0.1f, 0),
+                    player.b2body.getWorldCenter(), true);
+        }
     }
 
     public void update(float deltaTime) {
         handleInput(deltaTime);
 
         world.step(1 / 60f, 6, 2);
+
+        gameCam.position.x = player.b2body.getPosition().x;
 
         gameCam.update();
         renderer.setView(gameCam);
