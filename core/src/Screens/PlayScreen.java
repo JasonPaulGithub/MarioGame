@@ -8,6 +8,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
@@ -20,6 +21,7 @@ import com.mygdx.game.MarioGame;
 
 public class PlayScreen implements Screen {
     public MarioGame game;
+    private TextureAtlas atlas;
     private OrthographicCamera gameCam;
     private Viewport gamePort;
     private Hud hud;
@@ -36,21 +38,21 @@ public class PlayScreen implements Screen {
     private Mario player;
 
 
-    public PlayScreen(MarioGame game) {
+    public PlayScreen(MarioGame game)
+    {
         this.game = game;
+        atlas = new TextureAtlas("core/assets/Mario_and_Enemies.pack");
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(MarioGame.V_WIDTH / MarioGame.PPM, MarioGame.V_HEIGHT / MarioGame.PPM, gameCam);
         hud = new Hud(game.batch);
         maploader = new TmxMapLoader();
-        map = maploader.load("core/assets/map/level.tmx");
+        map = maploader.load("core/assets/map/level1.tmx");
         renderer = new OrthoCachedTiledMapRenderer(map, 1 / MarioGame.PPM);
         gameCam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
         world = new World(new Vector2(0, -10), true);
         box2dr = new Box2DDebugRenderer();
         player = new Mario(world);
         new B2WorldCreator(world, map);
-
-
     }
 
     @Override
