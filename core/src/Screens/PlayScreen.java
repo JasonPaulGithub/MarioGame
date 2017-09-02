@@ -51,8 +51,13 @@ public class PlayScreen implements Screen {
         gameCam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
         world = new World(new Vector2(0, -10), true);
         box2dr = new Box2DDebugRenderer();
-        player = new Mario(world);
         new B2WorldCreator(world, map);
+
+        player = new Mario(world,this);
+    }
+
+    public TextureAtlas getAtlas(){
+        return atlas;
     }
 
     @Override
@@ -87,6 +92,8 @@ public class PlayScreen implements Screen {
 
         world.step(1 / 60f, 6, 2);
 
+        player.update(deltaTime);
+
         gameCam.position.x = player.b2body.getPosition().x;
 
         gameCam.update();
@@ -98,13 +105,17 @@ public class PlayScreen implements Screen {
         update(delta);
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         renderer.setView(gameCam);
+        //render game map
         renderer.render();
-
+        //render physics Debug
         box2dr.render(world, gameCam.combined);
 
         game.batch.setProjectionMatrix(gameCam.combined);
+        game.batch.begin();
+        player.draw(game.batch);
+        game.batch.end();
+
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
     }
