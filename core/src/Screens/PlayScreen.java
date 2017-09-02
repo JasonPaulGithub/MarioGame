@@ -1,6 +1,7 @@
 package Screens;
 
 import Scenes.Hud;
+import Sprites.Mario;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
@@ -32,64 +33,93 @@ public class PlayScreen implements Screen {
     private World world;
     private Box2DDebugRenderer box2dr;
 
-    public PlayScreen(MarioGame game) {
+    private Mario player;
+
+
+    public PlayScreen(MarioGame game)
+    {
         this.game = game;
         gameCam = new OrthographicCamera();
-        gamePort = new FitViewport(MarioGame.V_WIDTH, MarioGame.V_HEIGHT, gameCam);
+        gamePort = new FitViewport(MarioGame.V_WIDTH / MarioGame.PPM, MarioGame.V_HEIGHT / MarioGame.PPM, gameCam);
         hud = new Hud(game.batch);
-
         maploader = new TmxMapLoader();
         map = maploader.load("core/assets/map/level.tmx");
-        renderer = new OrthoCachedTiledMapRenderer(map);
+        renderer = new OrthoCachedTiledMapRenderer(map, 1 / MarioGame.PPM);
         gameCam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
-        world = new World(new Vector2(0,0),true);
+        world = new World(new Vector2(0, -10), true);
         box2dr = new Box2DDebugRenderer();
+        player = new Mario(world);
 
         BodyDef bodyDef = new BodyDef();
         PolygonShape shape = new PolygonShape();
         FixtureDef fixDef = new FixtureDef();
         Body body;
 
-        for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject)object).getRectangle();
+
+        for (MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rect = ((RectangleMapObject) object).getRectangle();
             bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rect.getX()+rect.getWidth()/2,rect.getY()+rect.getHeight()/2);
-            body=world.createBody(bodyDef);
-            shape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
-            fixDef.shape=shape;
+            bodyDef.position.set(
+                    (rect.getX() + rect.getWidth() / 2) / MarioGame.PPM,
+                    (rect.getY() + rect.getHeight() / 2) / MarioGame.PPM
+            );
+            body = world.createBody(bodyDef);
+            shape.setAsBox(
+                    (rect.getWidth() / 2) / MarioGame.PPM,
+                    (rect.getHeight() / 2) / MarioGame.PPM
+            );
+            fixDef.shape = shape;
             body.createFixture(fixDef);
         }
 
         //pipes
-        for(MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject)object).getRectangle();
+        for (MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rect = ((RectangleMapObject) object).getRectangle();
             bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rect.getX()+rect.getWidth()/2,rect.getY()+rect.getHeight()/2);
-            body=world.createBody(bodyDef);
-            shape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
-            fixDef.shape=shape;
+            bodyDef.position.set(
+                    (rect.getX() + rect.getWidth() / 2) / MarioGame.PPM,
+                    (rect.getY() + rect.getHeight() / 2) / MarioGame.PPM
+            );
+            body = world.createBody(bodyDef);
+            shape.setAsBox(
+                    (rect.getWidth() / 2) / MarioGame.PPM,
+                    (rect.getHeight() / 2) / MarioGame.PPM
+            );
+            fixDef.shape = shape;
             body.createFixture(fixDef);
         }
 
         //coins
-        for(MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject)object).getRectangle();
+        for (MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rect = ((RectangleMapObject) object).getRectangle();
             bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rect.getX()+rect.getWidth()/2,rect.getY()+rect.getHeight()/2);
-            body=world.createBody(bodyDef);
-            shape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
-            fixDef.shape=shape;
+            bodyDef.position.set(
+                    (rect.getX() + rect.getWidth() / 2) / MarioGame.PPM,
+                    (rect.getY() + rect.getHeight() / 2) / MarioGame.PPM
+            );
+            body = world.createBody(bodyDef);
+            shape.setAsBox(
+                    (rect.getWidth() / 2) / MarioGame.PPM,
+                    (rect.getHeight() / 2) / MarioGame.PPM
+            );
+            fixDef.shape = shape;
             body.createFixture(fixDef);
         }
 
         //bricks
-        for(MapObject object : map.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject)object).getRectangle();
+        for (MapObject object : map.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)) {
+            Rectangle rect = ((RectangleMapObject) object).getRectangle();
             bodyDef.type = BodyDef.BodyType.StaticBody;
-            bodyDef.position.set(rect.getX()+rect.getWidth()/2,rect.getY()+rect.getHeight()/2);
-            body=world.createBody(bodyDef);
-            shape.setAsBox(rect.getWidth()/2,rect.getHeight()/2);
-            fixDef.shape=shape;
+            bodyDef.position.set(
+                    (rect.getX() + rect.getWidth() / 2) / MarioGame.PPM,
+                    (rect.getY() + rect.getHeight() / 2) / MarioGame.PPM
+            );
+            body = world.createBody(bodyDef);
+            shape.setAsBox(
+                    (rect.getWidth() / 2) / MarioGame.PPM,
+                    (rect.getHeight() / 2) / MarioGame.PPM
+            );
+            fixDef.shape = shape;
             body.createFixture(fixDef);
         }
     }
@@ -105,6 +135,9 @@ public class PlayScreen implements Screen {
 
     public void update(float deltaTime) {
         handleInput(deltaTime);
+
+        world.step(1 / 60f, 6, 2);
+
         gameCam.update();
         renderer.setView(gameCam);
     }
@@ -118,7 +151,7 @@ public class PlayScreen implements Screen {
         renderer.setView(gameCam);
         renderer.render();
 
-        box2dr.render(world,gameCam.combined);
+        box2dr.render(world, gameCam.combined);
 
         game.batch.setProjectionMatrix(gameCam.combined);
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
